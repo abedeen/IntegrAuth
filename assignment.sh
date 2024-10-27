@@ -128,7 +128,7 @@ while true; do
   headers+="\"$key\": \"$value\""","
 done
 headers=${headers%?}  # Remove trailing comma
-export HEADER_DATA="$headers"
+export HEADER_DATA="{ $headers }"
 body=""
 case "$method" in
   "POST"|"PUT")
