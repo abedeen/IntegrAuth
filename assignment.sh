@@ -60,15 +60,6 @@ fi
 }
 
 
-function d(){
-local output=
-if [[ -n "$output" ]]; then
-return 1
-else
-return 0
-fi
-}
-
 # Read input from user
 get_user_input() {
   local prompt="$1"
@@ -106,9 +97,13 @@ isNode=$(osCommand "npm")
   echo "npm is installed"  
 fi
 
-# check undici
-#install_command "undici" "npm list undici" "undici" "npm install undici"
+# Check if node_modules directory exists
+if [ ! -d "node_modules" ]; then
+  echo "node_modules directory not found. Installing dependencies..."
+  npm install
+fi
 
+# check undici
 checkCommand "npm list undici |grep undici@"
 if [ $? -eq 0 ]; then
   echo "undici found"
@@ -123,15 +118,17 @@ method=$(get_user_input "HTTP Method (GET, POST, PUT, DELETE)")
 http_version=$(get_user_input "HTTP Version (1.0, 1.1, 2.0)")
 headers=""
 while true; do
-  keyInp=$(get_user_input "Headers (key:value pairs) or 'Done' to finish")
+  keyInp=$(get_user_input "Do you wish to add Header (Pres Enter Button/Type 'Done' to finish):")
   if [ "$keyInp" == "Done" ]; then
     break
   fi
-  # Using read command with IFS
-  IFS=":" read -r key value <<< "$keyInp"
-  headers+="\"$key\": \"$(base64 <<< "$value")\""","
+  key=$(get_user_input "Enter Key :" )
+  value=$(get_user_input "Enter value for ($key) :" )
+
+  headers+="\"$key\": \"$value\""","
 done
 headers=${headers%?}  # Remove trailing comma
+export HEADER_DATA="$headers"
 body=""
 case "$method" in
   "POST"|"PUT")
@@ -141,6 +138,8 @@ case "$method" in
   *)
     ;;
 esac
+export BODY_DATA="$body"
+export API_URL="$api_url"
 
 # input from user for frequency
 frequency=$(get_user_input "Frequency (e.g. 1m, 1h, 1d, 1w, 1M, 1y)")
@@ -149,7 +148,7 @@ frequency=$(get_user_input "Frequency (e.g. 1m, 1h, 1d, 1w, 1M, 1y)")
 seconds=$(convert_to_seconds "$frequency")
 
 while true; do
-  echo "node api_caller.js $api_url $method $http_version $headers $body"
+  node call_api.js $method $http_version
   sleep $seconds
 done
 
