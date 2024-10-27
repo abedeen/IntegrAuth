@@ -24,7 +24,11 @@ function base64Encode(string) {
   const base64String = buffer.toString('base64');
   return base64String;
 }
-
+function encodeHeader(jsonObject){
+for (const key in jsonObject)
+  jsonObject[key]= base64Encode(jsonObject[key]+'');
+return jsonObject;
+}
 urlObj = parseUrl(apiURL)
 requestData={
     "timestamp": null,
@@ -35,7 +39,7 @@ requestData={
       "host": urlObj.host,
       "port": urlObj.port,
       "pathWithQuery": urlObj.path,
-      "headers": headerData,
+      "headers": encodeHeader(headerData),
       "length": bodyData.length,
       "body": base64Encode(bodyData),
     },
