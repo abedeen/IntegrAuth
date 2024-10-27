@@ -44,7 +44,7 @@
     - HTTP Method
     - HTTP Version
     - Headers (key:value pairs)
-      - You need to ask for each pair separately and the user can say "Done" to stop
+      - It ask for each pair separated by : and the user can say "Done" to stop
     - Body (string)
     - Frequency (in human readable format like 1m, 1h, 1d, 1w, 1M, 1y)
 
